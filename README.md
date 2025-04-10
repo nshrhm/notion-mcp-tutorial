@@ -8,8 +8,8 @@ Notion MCPチュートリアルとサンプルコード
 
 ### チュートリアル一覧
 
-- [基本チュートリアル](tutorials/basic/)
-- [応用チュートリアル](tutorials/advanced/)
+- [基本チュートリアル](tutorials/basic/index.md)
+- [応用チュートリアル](tutorials/advanced/index.md)
 
 ## 使い方
 
