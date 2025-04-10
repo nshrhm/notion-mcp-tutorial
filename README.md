@@ -21,3 +21,12 @@ Notion MCPチュートリアルとサンプルコード
 3. チュートリアルに従ってAPIを操作
 
 詳細な手順は、各チュートリアルのREADME.mdファイルを参照してください。
+
+## フィードバック (Feedback)
+
+このチュートリアルに関するご意見、ご感想、改善点などがありましたら、ぜひフィードバックをお寄せください。
+
+- **アンケート:** [Googleフォーム](https://forms.gle/WPqExwmTAG8995yv9) からご回答いただけます。
+- **GitHub Issues:** 具体的な問題点や改善提案、質問などは、[GitHub Issues](https://github.com/nshrhm/notion-mcp-tutorial/issues) にてご報告ください。新しいIssueを作成する際は、可能であればテンプレートをご利用ください。
+
+皆様からのフィードバックを心よりお待ちしております。
