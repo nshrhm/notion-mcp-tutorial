@@ -5,13 +5,13 @@
 
 ## 課題内容
 
-### 課題1: データベースの検索
-1. ワークスペース内の "Projects" という名前のデータベースを検索してください
-2. データベースの詳細情報を取得してください
+### 課題1: データベースの検索と詳細確認
+1. ワークスペース内の "Projects" という名前のデータベースを検索し、そのIDを取得してください。
+2. 取得したデータベースIDを使用して、データベースの詳細情報（特に `properties` の定義）を取得・確認してください。これは次の課題で正しいプロパティ名と型を使うために重要です。
 
 #### 解答例
 ```typescript
-// データベース検索
+// 1. データベース検索
 <use_mcp_tool>
 <server_name>notionApi</server_name>
 <tool_name>API-post-search</tool_name>
@@ -21,21 +21,42 @@
   "filter": {
     "property": "object",
     "value": "database"
-  }
+  },
+  "page_size": 1 // 通常、名前が一致するDBは少ないため1件取得で十分
 }
 </arguments>
 </use_mcp_tool>
+
+// 検索結果からデータベースIDを取得 (例: searchResults は上記ツールの結果)
+// const databaseId = searchResults.results[0]?.id;
+// if (!databaseId) { throw new Error("データベースが見つかりません"); }
+
+// 2. データベース詳細情報の取得
+<use_mcp_tool>
+<server_name>notionApi</server_name>
+<tool_name>API-retrieve-a-database</tool_name>
+<arguments>
+{
+  // "database_id": databaseId // 上で取得したIDを設定
+  "database_id": "検索で見つけたデータベースID"
+}
+</arguments>
+</use_mcp_tool>
+
+// 上記ツールの結果から properties の内容を確認する
 ```
 
 ### 課題2: データベースへのページ追加
-1. 見つけたデータベースに新しいプロジェクトページを作成してください
-2. 以下の情報を含めてください：
-   - プロジェクト名
-   - 開始日
-   - 状態（進行中）
-   - 担当者
+1. 課題1で見つけたデータベースに新しいプロジェクトページを作成してください。
+2. **重要:** 以下の解答例にあるプロパティ名（`Name`, `Start Date`, `Status`, `Assignee`）と型（`title`, `date`, `select`, `people`）は、**あなたの「Projects」データベースの実際のプロパティ定義に合わせて修正する必要があります。** 課題1で取得した情報やNotion UIで確認してください。
+3. ページには最低限、以下の情報を含めてください（プロパティ名は適宜修正）：
+   - プロジェクト名 (タイトルプロパティ)
+   - 開始日 (日付プロパティ)
+   - 状態 (セレクトプロパティ、例: "進行中")
+   - 担当者 (ユーザープロパティ)
 
 #### 解答例
+**注意:** 以下の `properties` 内の名前と型は、ご自身のデータベースに合わせてください。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
@@ -79,12 +100,14 @@
 ```
 
 ### 課題3: ページの更新とコメント追加
-1. 作成したページに以下の更新を行ってください：
-   - プロジェクト説明の追加
-   - タグの追加
-2. 更新内容に関するコメントを追加してください
+1. 課題2で作成したページに、以下のプロパティ情報を追加または更新してください。
+2. **重要:** 以下の解答例にあるプロパティ名（`Description`, `Tags`）と型（`rich_text`, `multi_select`）は、**あなたの「Projects」データベースの実際のプロパティ定義に合わせて修正する必要があります。**
+   - プロジェクト説明 (リッチテキストプロパティ)
+   - タグ (マルチセレクトプロパティ)
+3. 更新内容に関するコメントをページに追加してください。
 
 #### 解答例
+**注意:** 以下の `properties` 内の名前と型は、ご自身のデータベースに合わせてください。
 ```typescript
 // ページの更新
 <use_mcp_tool>

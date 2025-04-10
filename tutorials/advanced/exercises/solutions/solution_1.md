@@ -50,7 +50,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-page</tool_name>
+<tool_name>API-post-page</tool_name>
 <arguments>
 {
   "parent": {
@@ -109,7 +109,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-retrieve-page</tool_name>
+<tool_name>API-retrieve-a-page</tool_name>
 <arguments>
 {
   "page_id": "作成したページID"
@@ -126,26 +126,12 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
-  "filter": {
-    "and": [
-      {
-        "property": "状態",
-        "select": {
-          "equals": "進行中"
-        }
-      },
-      {
-        "property": "優先度",
-        "select": {
-          "equals": "高"
-        }
-      }
-    ]
-  }
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"and\": [{\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}, {\"property\": \"優先度\", \"select\": {\"equals\": \"高\"}}]}"
 }
 </arguments>
 </use_mcp_tool>
@@ -155,16 +141,12 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
-  "filter": {
-    "property": "期限",
-    "date": {
-      "before": "2026-01-01"
-    }
-  },
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"期限\", \"date\": {\"before\": \"2026-01-01\"}}",
   "sorts": [
     {
       "property": "優先度",
@@ -186,10 +168,12 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-update-page</tool_name>
+<tool_name>API-patch-page</tool_name>
 <arguments>
 {
   "page_id": "ページID",
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "進捗率": {
       "number": 40
@@ -226,10 +210,12 @@ async function updateProjectStatus(projectId, progress) {
   if (progress >= 100) {
     <use_mcp_tool>
     <server_name>notionApi</server_name>
-    <tool_name>API-update-page</tool_name>
+    <tool_name>API-patch-page</tool_name>
     <arguments>
     {
       "page_id": projectId,
+      // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+      // ツール仕様を確認してください。ここではオブジェクトとして記述します。
       "properties": {
         "状態": {
           "select": {
@@ -251,10 +237,12 @@ async function batchUpdateProjects(projects) {
   for (const project of projects) {
     <use_mcp_tool>
     <server_name>notionApi</server_name>
-    <tool_name>API-update-page</tool_name>
+    <tool_name>API-patch-page</tool_name>
     <arguments>
     {
       "page_id": project.id,
+      // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+      // ツール仕様を確認してください。ここではオブジェクトとして記述します。
       "properties": {
         "進捗率": {
           "number": project.progress

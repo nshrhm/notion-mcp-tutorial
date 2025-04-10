@@ -24,6 +24,7 @@
 ```
 
 ### 2. フィルター付き検索
+   - `filter` パラメータを使って、検索対象をページ (`page`) またはデータベース (`database`) に限定できます。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
@@ -32,44 +33,16 @@
 {
   "query": "プロジェクト",
   "filter": {
-    "property": "object",
-    "value": "page"  // または "database"
+    "property": "object", // フィルター対象のプロパティ (現在は "object" のみサポート)
+    "value": "page"      // フィルター値 ("page" または "database")
   }
 }
 </arguments>
 </use_mcp_tool>
 ```
 
-## 高度な検索オプション
-
-### 1. 複合検索条件
-```typescript
-<use_mcp_tool>
-<server_name>notionApi</server_name>
-<tool_name>API-post-search</tool_name>
-<arguments>
-{
-  "query": "プロジェクト",
-  "filter": {
-    "and": [
-      {
-        "property": "object",
-        "value": "page"
-      },
-      {
-        "timestamp": "last_edited_time",
-        "last_edited_time": {
-          "after": "2025-01-01"
-        }
-      }
-    ]
-  }
-}
-</arguments>
-</use_mcp_tool>
-```
-
-### 2. ソートオプション
+### 3. ソート順の変更
+   - `sort` パラメータで、結果の並び順を変更できます。`last_edited_time` (最終更新日時) に基づく昇順 (`ascending`) または降順 (`descending`) でソート可能です。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
@@ -78,8 +51,8 @@
 {
   "query": "プロジェクト",
   "sort": {
-    "direction": "ascending",
-    "timestamp": "created_time"
+    "direction": "ascending",      // "ascending" または "descending"
+    "timestamp": "last_edited_time" // 現在は "last_edited_time" のみサポート
   }
 }
 </arguments>

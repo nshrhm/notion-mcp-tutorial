@@ -34,6 +34,7 @@
 ## 課題2: データベースへのページ追加
 
 ### 基本的な解答例
+**重要:** 以下の解答例にあるプロパティ名（`Name`, `Start Date`, `Status`, `Assignee`）と型は、**あなたの「Projects」データベースの実際のプロパティ定義に合わせて修正する必要があります。** 演習課題1で取得した情報やNotion UIで確認してください。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
@@ -119,6 +120,7 @@
 ## 課題3: ページの更新とコメント追加
 
 ### 解答例
+**重要:** 以下の解答例にあるプロパティ名（`Description`, `Tags`）と型は、**あなたの「Projects」データベースの実際のプロパティ定義に合わせて修正する必要があります。**
 ```typescript
 // ページの更新
 <use_mcp_tool>
@@ -127,6 +129,8 @@
 <arguments>
 {
   "page_id": "作成したページID",
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "Description": {
       "rich_text": [

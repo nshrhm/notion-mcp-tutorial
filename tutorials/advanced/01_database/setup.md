@@ -41,7 +41,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-database</tool_name>
+<tool_name>API-create-a-database</tool_name>
 <arguments>
 {
   "parent": {

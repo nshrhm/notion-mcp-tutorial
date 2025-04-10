@@ -21,7 +21,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-database</tool_name>
+<tool_name>API-create-a-database</tool_name>
 <arguments>
 {
   "parent": {
@@ -120,7 +120,7 @@
 // プロジェクト1の追加
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-page</tool_name>
+<tool_name>API-post-page</tool_name>
 <arguments>
 {
   "parent": {
@@ -175,16 +175,12 @@
 // 進行中のプロジェクト検索
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
-  "filter": {
-    "property": "状態",
-    "select": {
-      "equals": "進行中"
-    }
-  }
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}"
 }
 </arguments>
 </use_mcp_tool>
@@ -192,16 +188,12 @@
 // 2025年内期限のプロジェクトを優先度順に表示
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
-  "filter": {
-    "property": "期限",
-    "date": {
-      "before": "2026-01-01"
-    }
-  },
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"期限\", \"date\": {\"before\": \"2026-01-01\"}}",
   "sorts": [
     {
       "property": "優先度",
@@ -211,7 +203,32 @@
 }
 </arguments>
 </use_mcp_tool>
+
+// ウェブサイトリニューアルの進捗率を更新 (まずページIDを取得する必要がある)
+// 例: 上記の検索結果などから "ウェブサイトリニューアル" のページIDを取得したとする
+// const websiteRenewalPageId = "取得したページID";
+
+<use_mcp_tool>
+<server_name>notionApi</server_name>
+<tool_name>API-patch-page</tool_name>
+<arguments>
+{
+  "page_id": "ウェブサイトリニューアルのページID", // 実際のページIDに置き換える
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
+  // (MCPサーバーの実装によっては文字列化が必要かもしれません)
+  "properties": {
+    "進捗率": {
+      "number": 40 // 新しい進捗率
+    }
+  }
+  // properties をJSON文字列で渡す場合の例:
+  // "properties": "{\"進捗率\": {\"number\": 40}}"
+}
+</arguments>
+</use_mcp_tool>
 ```
+**注意:** ページの更新 (`API-patch-page`) を行うには、対象となるページのIDが必要です。上記の例では、事前に検索などで「ウェブサイトリニューアル」ページのIDを取得していることを前提としています。また、`properties` パラメータの形式（オブジェクトかJSON文字列か）は、MCPサーバーの実装やツールの詳細仕様によって異なる可能性があるため、確認が必要です。
 
 ## 評価ポイント
 1. データベース設計

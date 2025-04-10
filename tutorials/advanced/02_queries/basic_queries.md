@@ -6,10 +6,11 @@
 ## データベースのクエリ基本
 
 ### 1. 基本的なクエリ
+   - データベースIDを指定して、そのデータベース内のページを取得します。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
@@ -20,72 +21,78 @@
 ```
 
 ### 2. フィルター付きクエリ
+   - `filter` パラメータを使って、特定の条件に一致するページのみを取得します。
+   - **重要:** `filter` パラメータには、フィルター条件を表すJSONオブジェクトを **文字列化して** 指定します。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
-  "filter": {
-    "property": "状態",
-    "select": {
-      "equals": "進行中"
-    }
-  }
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}"
 }
 </arguments>
 </use_mcp_tool>
 ```
 
 ## フィルタリングオプション
+   - `filter` パラメータに指定するJSON文字列の内容です。Notion APIのフィルターオブジェクト構造に従います。
 
-### 1. プロパティタイプ別のフィルター
+### 1. プロパティタイプ別のフィルター (JSON文字列内の構造例)
 
 #### テキストフィルター
 ```json
+// JSON文字列: "{\"property\": \"タイトル\", \"rich_text\": {\"contains\": \"プロジェクト\"}}"
 {
   "property": "タイトル",
   "rich_text": {
-    "contains": "プロジェクト"
+    "contains": "プロジェクト" // 他にも equals, does_not_equal, starts_with など
   }
 }
 ```
 
 #### 数値フィルター
 ```json
+// JSON文字列: "{\"property\": \"進捗率\", \"number\": {\"greater_than_or_equal_to\": 50}}"
 {
   "property": "進捗率",
   "number": {
-    "greater_than_or_equal_to": 50
+    "greater_than_or_equal_to": 50 // 他にも equals, less_than など
   }
 }
 ```
 
 #### 日付フィルター
 ```json
+// JSON文字列: "{\"property\": \"期限\", \"date\": {\"before\": \"2025-12-31\"}}"
 {
   "property": "期限",
   "date": {
-    "before": "2025-12-31"
+    "before": "2025-12-31" // 他にも after, equals, on_or_before など
   }
 }
 ```
 
-#### 選択肢フィルター
+#### 選択肢フィルター (Select)
 ```json
+// JSON文字列: "{\"property\": \"優先度\", \"select\": {\"equals\": \"高\"}}"
 {
   "property": "優先度",
   "select": {
-    "equals": "高"
+    "equals": "高" // 他にも does_not_equal, is_empty, is_not_empty
   }
 }
 ```
+   - Multi-select, People, Checkbox など、他のプロパティタイプにも対応するフィルターがあります。詳細はNotion APIドキュメントを参照してください。
 
-### 2. 複合フィルター
+### 2. 複合フィルター (JSON文字列内の構造例)
 
 #### AND条件
+   - すべての条件を満たす場合に一致します。
 ```json
+// JSON文字列: "{\"and\": [{\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}, {\"property\": \"優先度\", \"select\": {\"equals\": \"高\"}}]}"
 {
   "and": [
     {
@@ -105,7 +112,9 @@
 ```
 
 #### OR条件
+   - いずれかの条件を満たす場合に一致します。
 ```json
+// JSON文字列: "{\"or\": [{\"property\": \"状態\", \"select\": {\"equals\": \"計画中\"}}, {\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}]}"
 {
   "or": [
     {
@@ -123,14 +132,16 @@
   ]
 }
 ```
+   - `and` と `or` はネストすることも可能です。
 
 ## ソートオプション
 
 ### 1. 単一プロパティでのソート
+   - `sorts` パラメータにソート条件の配列を指定します。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
@@ -146,10 +157,11 @@
 ```
 
 ### 2. 複数プロパティでのソート
+   - `sorts` 配列に複数のソート条件を指定すると、優先順位に従ってソートされます（配列の最初の要素が最優先）。
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
@@ -171,11 +183,12 @@
 ## ページネーション
 
 ### 1. 基本的なページネーション
+   - `page_size` で1回に取得する件数を指定し、`start_cursor` で次のページの開始位置を指定します。
 ```typescript
 // 最初のページを取得
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",
@@ -187,7 +200,7 @@
 // 次のページを取得（start_cursorを使用）
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "データベースID",

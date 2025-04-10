@@ -37,8 +37,9 @@
 <tool_name>API-retrieve-a-page</tool_name>
 <arguments>
 {
-  "page_id": "検索で取得したページID",
-  "filter_properties": ["タイトル", "作成日", "最終更新日"]
+  "page_id": "検索で取得したページID"
+  // filter_properties は特定のプロパティIDを文字列で指定しますが、
+  // 基本演習では省略します。全プロパティが取得されます。
 }
 </arguments>
 </use_mcp_tool>
@@ -126,35 +127,7 @@
 
 ## 発展的な解答例
 
-### 1. 条件付き検索
-```typescript
-// タイトルとタグで絞り込み
-<use_mcp_tool>
-<server_name>notionApi</server_name>
-<tool_name>API-post-search</tool_name>
-<arguments>
-{
-  "query": "プロジェクト",
-  "filter": {
-    "and": [
-      {
-        "property": "object",
-        "value": "page"
-      },
-      {
-        "property": "Tags",
-        "multi_select": {
-          "contains": "重要"
-        }
-      }
-    ]
-  }
-}
-</arguments>
-</use_mcp_tool>
-```
-
-### 2. 動的なコメント生成
+### 1. 動的なコメント生成
 タスクの状態に応じて異なるコメントを生成する例：
 
 ```typescript

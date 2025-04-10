@@ -49,19 +49,32 @@
 
 ### 4. MCPの設定
 1. 設定ファイルの作成
+   - 以下のJSONを参考に、MCP設定ファイル（例: `cline_mcp_settings.json`）に `notionApi` の設定を追加します。
+   - **重要:** `"YOUR_TOKEN"` の部分は、ステップ2で取得した実際のAPIトークン（シークレット）に置き換えてください。
+
 ```json
 {
-  "notionApi": {
-    "command": "npx",
-    "args": ["-y", "@notionhq/notion-mcp-server"],
-    "env": {
-      "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer YOUR_TOKEN\", \"Notion-Version\": \"2022-06-28\" }"
+  "mcpServers": { // 他のサーバー設定がある場合は、この中に追記します
+    "notionApi": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        // 注意: この環境変数名はNotion MCPサーバーの仕様に基づいています。
+        // トークンとAPIバージョンをヘッダーとして設定します。
+        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer YOUR_TOKEN\", \"Notion-Version\": \"2022-06-28\" }"
+      },
+      "disabled": false, // サーバーを有効にする
+      "autoApprove": [] // 自動承認は設定しない
     }
   }
 }
 ```
+   - 設定ファイルを保存すると、MCPサーバーが自動的に起動します。
 
 2. 動作確認
+   - 設定が正しく行われ、Notion APIへの認証が成功したかを確認するために、以下のツールを実行します。
+   - このコマンドは、あなたのNotionアカウント（ボットユーザー）自身の情報を取得します。
+
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
@@ -75,6 +88,9 @@
 ## 推奨される使用方法
 
 ### 1. ハイブリッドアプローチ
+   - 前述の通り、Notion APIには一部制限があるため、UI操作とAPI操作を組み合わせる**ハイブリッドアプローチ**が現実的かつ効果的です。
+   - これにより、UIの柔軟な操作性（データベース構造の設計など）と、APIによる自動化（定型的なデータ取得や更新など）の利点を両立できます。
+
 1. NotionのUIを使用
    - データベースの作成と構造設定
    - テンプレートページの準備
@@ -126,3 +142,34 @@
 - 技術的な質問: APIドキュメントを参照
 - バグ報告: GitHubイシューで報告
 - 一般的な質問: コミュニティフォーラムを利用
+
+---
+
+**## よくある質問 (FAQ)**
+
+**Q: このチュートリアルはNotion APIがメインで、MCPは使っていないのですか？**
+
+**A:** 確かに、チュートリアルのコード例はNotion APIの各機能（ページの検索、作成、更新など）の使い方を示しているため、Notion APIが中心に見えるかもしれません。
+
+しかし、重要な点として、このチュートリアルではそれらのNotion API機能を **MCP (Model Context Protocol) を介して利用しています**。
+
+コード例に出てくる `<use_mcp_tool>` タグが、MCPの仕組みを使っている証拠です。
+
+```typescript
+<use_mcp_tool>
+<server_name>notionApi</server_name>
+<tool_name>API-post-search</tool_name>
+<arguments>
+{ ... }
+</arguments>
+</use_mcp_tool>
+```
+
+これは、直接Notion APIを呼び出すのではなく、`notionApi` という名前の **MCPサーバー** に対して、`API-post-search` という名前の **ツール（Notion APIの検索機能に対応）** の実行をリクエストしています。MCPサーバーが、私たちのリクエストを受け取り、認証情報（APIトークンなど）を付与して、実際にNotion APIと通信する役割を担っています。
+
+MCPを使うことで、
+*   様々なAPI（将来的にはNotion以外も）を統一的な方法（`<use_mcp_tool>`）で呼び出せる。
+*   APIごとの認証情報の管理をMCPサーバーに任せられる。
+といったメリットがあります。
+
+このチュートリアルは、「Notion APIの機能をMCP経由でどのように利用するか」を学ぶことを目的としています。

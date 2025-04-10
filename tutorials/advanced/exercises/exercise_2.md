@@ -21,7 +21,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-database</tool_name>
+<tool_name>API-create-a-database</tool_name>
 <arguments>
 {
   "parent": {
@@ -77,7 +77,7 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-page</tool_name>
+<tool_name>API-post-page</tool_name>
 <arguments>
 {
   "parent": {
@@ -108,10 +108,12 @@
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-update-page</tool_name>
+<tool_name>API-patch-page</tool_name>
 <arguments>
 {
   "page_id": "プロジェクトのページID",
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "担当チーム": {
       "relation": [
@@ -136,27 +138,29 @@
 // プロジェクトの進捗確認と更新
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "プロジェクトデータベースID",
-  "filter": {
-    "property": "進捗率",
-    "number": {
-      "equals": 100
-    }
-  }
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"進捗率\", \"number\": {\"equals\": 100}}"
 }
 </arguments>
 </use_mcp_tool>
 
-// ステータス更新
+// 上記クエリの結果 (results) をループして、各ページのステータスを更新する想定
+// for (const page of results) { ... }
+
+// ステータス更新 (ループ内で実行するイメージ)
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-update-page</tool_name>
+<tool_name>API-patch-page</tool_name>
 <arguments>
 {
-  "page_id": "完了プロジェクトのID",
+  // "page_id": page.id, // ループ内のページID
+  "page_id": "完了プロジェクトのID", // 例として単一IDを記載
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "状態": {
       "select": {
@@ -164,10 +168,13 @@
       }
     }
   }
+  // properties をJSON文字列で渡す場合の例:
+  // "properties": "{\"状態\": {\"select\": {\"name\": \"完了\"}}}"
 }
 </arguments>
 </use_mcp_tool>
 ```
+**注意:** 実際の自動更新ワークフローでは、データベースクエリの結果（完了したプロジェクトのリスト）を取得し、そのリスト内の各ページIDに対して更新処理 (`API-patch-page`) をループ実行する必要があります。上記の例は、更新処理の単体を示しています。
 
 ## 評価ポイント
 

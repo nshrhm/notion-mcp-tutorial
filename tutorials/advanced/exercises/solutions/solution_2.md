@@ -16,7 +16,7 @@ graph TD
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-database</tool_name>
+<tool_name>API-create-a-database</tool_name>
 <arguments>
 {
   "parent": {
@@ -76,10 +76,12 @@ graph TD
 ```typescript
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-update-database</tool_name>
+<tool_name>API-update-a-database</tool_name>
 <arguments>
 {
   "database_id": "プロジェクトデータベースID",
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "担当チーム": {
       "relation": {
@@ -100,7 +102,7 @@ graph TD
 // チームの作成
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-create-page</tool_name>
+<tool_name>API-post-page</tool_name>
 <arguments>
 {
   "parent": {
@@ -132,10 +134,12 @@ graph TD
 // プロジェクトとの関連付け
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-update-page</tool_name>
+<tool_name>API-patch-page</tool_name>
 <arguments>
 {
   "page_id": "プロジェクトのページID",
+  // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+  // ツール仕様を確認してください。ここではオブジェクトとして記述します。
   "properties": {
     "担当チーム": {
       "relation": [
@@ -155,16 +159,12 @@ graph TD
 // チームが担当するプロジェクトの取得
 <use_mcp_tool>
 <server_name>notionApi</server_name>
-<tool_name>API-query-database</tool_name>
+<tool_name>API-post-database-query</tool_name>
 <arguments>
 {
   "database_id": "プロジェクトデータベースID",
-  "filter": {
-    "property": "担当チーム",
-    "relation": {
-      "contains": "チームのページID"
-    }
-  }
+  // フィルターオブジェクトをJSON文字列として渡す
+  "filter": "{\"property\": \"担当チーム\", \"relation\": {\"contains\": \"チームのページID\"}}"
 }
 </arguments>
 </use_mcp_tool>
@@ -179,31 +179,33 @@ async function updateProjectProgress() {
   // 進行中のプロジェクトを取得
   <use_mcp_tool>
   <server_name>notionApi</server_name>
-  <tool_name>API-query-database</tool_name>
+  <tool_name>API-post-database-query</tool_name>
   <arguments>
   {
     "database_id": "プロジェクトデータベースID",
-    "filter": {
-      "property": "状態",
-      "select": {
-        "equals": "進行中"
-      }
-    }
+    // フィルターオブジェクトをJSON文字列として渡す
+    "filter": "{\"property\": \"状態\", \"select\": {\"equals\": \"進行中\"}}"
   }
   </arguments>
   </use_mcp_tool>
 
-  // 各プロジェクトのタスク完了率を計算
-  for (const project of projects) {
-    const progress = calculateProgress(project);
-    if (progress === 100) {
+  // 各プロジェクトのタスク完了率を計算 (calculateProgress は別途実装する想定)
+  // const projects = queryResult.results; // 上記クエリの結果
+  // for (const project of projects) { ... }
+
+  // --- ループ内の処理イメージ ---
+  // const progress = calculateProgress(project);
+  // if (progress === 100) {
       // プロジェクトを完了状態に更新
       <use_mcp_tool>
       <server_name>notionApi</server_name>
-      <tool_name>API-update-page</tool_name>
+      <tool_name>API-patch-page</tool_name>
       <arguments>
       {
-        "page_id": project.id,
+        // "page_id": project.id,
+        "page_id": "完了プロジェクトのID", // 例として単一ID
+        // propertiesパラメータはJSON文字列として渡す必要がある場合があるため、
+        // ツール仕様を確認してください。ここではオブジェクトとして記述します。
         "properties": {
           "状態": {
             "select": {
@@ -228,29 +230,16 @@ async function checkDeadlines() {
 
   <use_mcp_tool>
   <server_name>notionApi</server_name>
-  <tool_name>API-query-database</tool_name>
+  <tool_name>API-post-database-query</tool_name>
   <arguments>
   {
     "database_id": "プロジェクトデータベースID",
-    "filter": {
-      "and": [
-        {
-          "property": "状態",
-          "select": {
-            "does_not_equal": "完了"
-          }
-        },
-        {
-          "property": "期限",
-          "date": {
-            "next_week": {}
-          }
-        }
-      ]
-    }
+    // フィルターオブジェクトをJSON文字列として渡す
+    "filter": "{\"and\": [{\"property\": \"状態\", \"select\": {\"does_not_equal\": \"完了\"}}, {\"property\": \"期限\", \"date\": {\"next_week\": {}}}]}"
   }
   </arguments>
   </use_mcp_tool>
+  // 結果を処理して通知などを実装
 }
 ```
 
@@ -262,32 +251,42 @@ async function updateTeamUtilization() {
   // チームごとのプロジェクト数と状況を集計
   <use_mcp_tool>
   <server_name>notionApi</server_name>
-  <tool_name>API-query-database</tool_name>
+  <tool_name>API-post-database-query</tool_name>
   <arguments>
   {
     "database_id": "チームデータベースID",
-    "filter": {
-      "property": "ステータス",
-      "select": {
-        "equals": "稼働中"
-      }
-    }
+    // フィルターオブジェクトをJSON文字列として渡す
+    "filter": "{\"property\": \"ステータス\", \"select\": {\"equals\": \"稼働中\"}}"
   }
   </arguments>
   </use_mcp_tool>
+  // 結果を集計して稼働率を計算し、チームDBを更新するなどの処理
 }
 ```
 
 ### 2. プロジェクトダッシュボードの更新
+   - `API-patch-block-children` を使って既存のダッシュボードページにコンテンツを追加・更新する例
 ```typescript
 // プロジェクト状況のサマリー作成
 async function updateDashboard() {
+  // ここでプロジェクトDBからサマリー情報を取得・生成する処理 (例: 完了プロジェクト数など)
+  const summaryText = "完了プロジェクト数: 10, 進行中: 5"; // 例
+
   <use_mcp_tool>
   <server_name>notionApi</server_name>
-  <tool_name>API-update-page</tool_name>
+  // ダッシュボードページ(ブロック)の子要素を更新する (既存コンテンツは上書きされる可能性あり)
+  // または、特定のブロックIDに対して追記する (API-patch-block-children)
+  // ここではページ全体を更新する例として API-patch-page を使うが、
+  // 実際にはブロック操作の方が適切な場合が多い
+  <tool_name>API-patch-page</tool_name> // 注意: ページ全体の更新は既存コンテンツに影響する可能性
+  // <tool_name>API-patch-block-children</tool_name> // 特定ブロックへの追記が望ましい場合
   <arguments>
   {
     "page_id": "ダッシュボードページID",
+    // "block_id": "ダッシュボードページID", // API-patch-block-children の場合
+    // properties の更新ではなく、children (ブロック) を更新する例
+    // (API-patch-page で children を更新できるかは要確認、通常はブロック操作API)
+    // 以下は API-patch-block-children を使う場合の children の例
     "children": [
       {
         "object": "block",
